@@ -1,0 +1,42 @@
+name: Deploy to Databricks
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  deploy:
+    runs-on: self-hosted
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v2
+
+    - name: Set up Python
+      uses: actions/setup-python@v2
+      with:
+        python-version: '3.8'
+
+    - name: Install dependencies
+      run: |
+        pip install databricks-cli pytest
+
+    - name: Run tests
+      run: |
+        pytest tests/
+
+    - name: Package Asset Bundle
+      run: |
+        cd databricks
+        databricks assets package -o assets/asset_bundle.json
+
+    - name: Upload Asset Bundle to Databricks
+      env:
+        DATABRICKS_HOST: ${{ secrets.DATABRICKS_HOST }}
+        DATABRICKS_TOKEN: ${{ secrets.DATABRICKS_TOKEN }}
+      run: |
+        databricks assets upload --bundle assets/DemoTeamBundle.dbundle --profile <profile-name>
+
+    - name: Trigger Databricks Job
+      run: |
+        databricks jobs run-now --job-id <job-id>

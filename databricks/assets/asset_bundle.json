@@ -1,0 +1,11 @@
+{
+    "name": "DemoTeamBundle",
+    "description": "Asset bundle for deploying the DemoTeam Hello World app",
+    "notebooks": [
+      {
+        "path": "notebooks/hello_world.py",
+        "name": "HelloWorld"
+      }
+    ]
+  }
+  
